@@ -1,155 +1,220 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HTMLive</title>
+    <title>HTMLive - Eyezuhk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+<style>
+	:root {
+            --background-color: #ffffff;
+            --text-color: #24292f;
+            --border-color: #dee2e6;
+            --control-bg: #f8f9fa;
+            --btn-danger: #dc3545;
+            --btn-primary: #0d6efd;
+            --btn-success: #198754;
+            --btn-info: #0dcaf0;
+            --btn-text: white;
+            --insert-bg: #e6ffec;
+            --delete-bg: #ffebe9;
+            --line-number-color: #6e7781;
+            --editor-bg: #ffffff;
+            --char-delete-bg: #ffdce0;
+            --char-insert-bg: #ccffd8;
+            --char-delete-text: #b31d28;
+            --char-insert-text: #27792f;
         }
-        .controls {
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
+
+        [data-theme="dark"] {
+            --background-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --control-bg: #161b22;
+            --btn-danger: #a12d3a;
+            --btn-primary: #1a5fb4;
+            --btn-success: #26a269;
+            --btn-info: #1c71d8;
+            --btn-text: #ffffff;
+            --insert-bg: #1a4721;
+            --delete-bg: #4a1c1c;
+            --line-number-color: #8b949e;
+            --editor-bg: #1e1e1e;
+            --char-delete-bg: #67060c;
+            --char-insert-bg: #1a4721;
+            --char-delete-text: #ffdce0;
+            --char-insert-text: #ccffd8;
         }
-        .theme-switch {
-            margin-left: 10px;
-        }
-        .dark-mode {
-            background-color: #333;
-            color: #fff;
-        }
-        .dark-mode #editor {
-            background-color: #444;
-            color: #fff;
-        }
-        .dark-mode #livePreview {
-            background-color: #444;
-            color: #fff;
-        }
-        .editor-preview {
-            display: flex;
-            flex-direction: row;
-            height: calc(100vh - 60px);
-        }
-        #editor {
-            width: 50%;
-            padding: 10px;
-            border-right: 1px solid #ccc;
-            overflow-y: auto;
-        }
-        #livePreview {
-            width: 50%;
-            padding: 10px;
-            overflow-y: auto;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    body {
+        max-width: none; /* Remove o limite de largura 100%*/
+		background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0; /* Remove margens padrão */
+        padding: 0; /* Remove preenchimento padrão */
+    }
+    .full-width {
+        max-width: none !important; /* Ignora a largura máxima */
+    }
+    .editor-preview {
+        display: flex;
+        flex-direction: row;
+        height: calc(100vh - 60px); /* Ajusta a altura para ocupar a tela */
+        width: 100%; /* Garante que a área de edição use 100% da largura */
+    }
+    #editor {
+        width: 50%; /* Mantém a divisão em 50% para o editor */
+        padding: 10px;
+		background-color: var(--background-color);
+        color: var(--text-color);
+        border-right: 1px solid #ccc;
+        overflow-y: auto;
+    }
+    #livePreview {
+        width: 50%; /* Mantém a divisão em 50% para a visualização */
+        padding: 10px;
+        overflow-y: auto;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .container {
+        max-width: none;
+    }
+    body {
+        max-width: 100%;
+    }
+    .btn {		
+		padding: 6px 10px;
+        border: none;
+        border-radius: 24px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        color: var(--btn-text);
+    }
+	.copy-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+			gap: 5px;
+            cursor: pointer;
+            background-color: var(--control-bg);
+            color: var(--text-color);
+            transition: all 0.2s;
+            font-size: 0.8em;
+    }
+</style>
 </head>
 
-<body>
-    <div class="controls">
-        <button class="btn btn-primary" onclick="previewFullPage()">Preview Full Page</button>
-        <button class="btn btn-danger" onclick="clearEditor()">Clear</button>
-        <button class="btn btn-info" onclick="importHTML()">Import</button>
-        <button class="btn btn-success" onclick="exportHTML()">Export</button>
-        <div class="theme-switch">
-            <label for="theme-switch">Theme:</label>
-            <select id="theme-switch" onchange="changeTheme()">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-            </select>
-        </div>
+<div>
+		Criado por <a href="https://eyezuhk.com.br" target="_blank" style="text-decoration: none; color: var(--btn-primary);">Eyezuhk - Isaac Fernandes</a>
+	<button class="copy-btn" onclick="toggleTheme()">Mudar Tema</button>
+	</div>
+
+<div class="controls">
+    <button class="btn btn-danger" onclick="clearEditor()">Clear</button>
+    <button class="btn btn-primary" onclick="previewFullPage()">Preview Full Page</button>
+    <button class="btn btn-warning" onclick="removeIndentation()">Remove Indentation</button> 
+    <button class="btn btn-info" onclick="importHTML()">Import</button>
+    <button class="btn btn-success" onclick="exportHTML()">Export</button>
+</div>
+
+<div class="editor-preview">
+    <div id="editor" contenteditable="true" placeholder="Coloque seu HTML aqui...">
+		<h1>Hello, World!</h1>
+        <p style="color: #00FF00; font-family: monospace;">Example: <strong>Hello, World!</strong></p>
     </div>
-    <div class="editor-preview">
-        <div id="editor" contenteditable="true" placeholder="Coloque seu HTML aqui...">
-            <p>Exemplo: <strong>Olá, mundo!</strong></p>
-        </div>
-        <div id="livePreview">
-            <iframe id="liveFrame"></iframe>
-        </div>
+    <div id="livePreview">
+        <iframe id="liveFrame"></iframe>
     </div>
+</div>
 
-    <script>
-        const editor = document.getElementById('editor');
-        const liveFrame = document.getElementById('liveFrame');
-        const themeSwitch = document.getElementById('theme-switch');
+<script>
+	let currentTheme = 'light';
+    const editor = document.getElementById('editor');
+    const liveFrame = document.getElementById('liveFrame');
 
-        editor.addEventListener('input', () => {
-            const htmlContent = editor.innerText;
-            liveFrame.srcdoc = htmlContent;
-        });
+    editor.addEventListener('input', () => {
+        const htmlContent = editor.innerText;
+        liveFrame.srcdoc = htmlContent;
+    });
 
-        // Função para visualizar em uma nova aba
-        function previewFullPage() {
-            const htmlContent = editor.innerText;
-            const newWindow = window.open();
-            newWindow.document.write(htmlContent);
-            newWindow.document.close();
-        }
+    // Função para visualizar em uma nova aba
+    function previewFullPage() {
+        const htmlContent = editor.innerText;
+        const newWindow = window.open();
+        newWindow.document.write(htmlContent);
+        newWindow.document.close();
+    }
 
-        // Função para limpar o editor
-        function clearEditor() {
-            editor.innerText = '';
-            liveFrame.srcdoc = '';
-        }
+    // Função para limpar o editor
+    function clearEditor() {
+        editor.innerText = '';
+        liveFrame.srcdoc = '';
+    }
 
-        // Função para importar HTML de um arquivo
-        function importHTML() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.html';
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = event => {
-                    editor.innerText = event.target.result;
-                    liveFrame.srcdoc = event.target.result;
-                };
-                reader.readAsText(file);
+    // Função para importar HTML de um arquivo
+    function importHTML() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.html';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = event => {
+                editor.innerText = event.target.result;
+                liveFrame.srcdoc = event.target.result;
             };
-            input.click();
-        }
+            reader.readAsText(file);
+        };
+        input.click();
+    }
 
-        // Função para exportar o conteúdo do editor para um arquivo
-        function exportHTML() {
-            const htmlContent = editor.innerText;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'export.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+    // Função para remover a indentação do conteúdo do editor
+    function removeIndentation() {
+        // Captura o conteúdo atual do editor
+        const htmlContent = editor.innerText;
 
-        // Função para mudar o tema
-        function changeTheme() {
-            const theme = themeSwitch.value;
-            if (theme === 'dark') {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-            }
-        }
+        // Remove a indentação (espaços em branco no início de cada linha)
+        const cleanedContent = htmlContent.split('\n').map(line => line.trim()).join('\n');
 
-        // Inicializa a visualização com o conteúdo padrão
-        liveFrame.srcdoc = editor.innerText;
-    </script>
-</body>
+        // Atualiza o editor e o iframe com o conteúdo limpo
+        editor.innerText = cleanedContent;
+        liveFrame.srcdoc = cleanedContent;
+    }
 
+    // Função para exportar o conteúdo do editor para um arquivo
+    function exportHTML() {
+        const htmlContent = editor.innerText;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'export.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Inicializa a visualização com o conteúdo padrão
+    liveFrame.srcdoc = editor.innerText;
+	
+
+	function toggleTheme() {
+			const body = document.body;
+			let currentTheme = body.getAttribute('data-theme') || 'light'; // Define 'light' como padrão
+
+		if (currentTheme === 'light') {
+        body.setAttribute('data-theme', 'dark');
+		} else {
+			body.setAttribute('data-theme', 'light');
+		}
+		}
+		
+</script>
 </html>
